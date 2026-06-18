@@ -1,194 +1,727 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saurav Kumar | InfoSec Portfolio</title>
-    <style>
-        body {
-            background-color: #000000;
-            color: #00ff00;
-            font-family: "Courier New", monospace;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Saurav Kumar | InfoSec Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Share+Tech&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — Hacker Terminal Theme
+       Black + Matrix Green (#00ff00) palette
+    ============================================================ */
+    :root {
+      --green:        #00ff00;
+      --green-dim:    #00cc00;
+      --green-faint:  rgba(0,255,0,0.12);
+      --green-glow:   0 0 8px rgba(0,255,0,0.6);
+      --green-glow-lg:0 0 20px rgba(0,255,0,0.4);
+      --bg:           #000000;
+      --surface:      #050505;
+      --surface-2:    #0a0a0a;
+      --border:       rgba(0,255,0,0.25);
+      --border-bright:rgba(0,255,0,0.7);
+      --text:         #00ff00;
+      --text-muted:   #00bb00;
+      --text-faint:   rgba(0,255,0,0.45);
 
-        header {
-            text-align: center;
-            padding: 2rem;
-            border-bottom: 2px solid #00ff00;
-        }
+      --font-mono: "Share Tech Mono", "Courier New", monospace;
+      --font-body: "Share Tech", "Courier New", monospace;
 
-        header h1 {
-            font-size: 2.5rem;
-            margin: 0;
-            text-shadow: 0 0 10px #00ff00;
-        }
+      --text-xs:   clamp(0.7rem,  0.65rem + 0.2vw, 0.8rem);
+      --text-sm:   clamp(0.8rem,  0.75rem + 0.25vw, 0.9rem);
+      --text-base: clamp(0.9rem,  0.85rem + 0.25vw, 1rem);
+      --text-lg:   clamp(1rem,    0.9rem  + 0.5vw,  1.2rem);
+      --text-xl:   clamp(1.2rem,  1rem    + 0.8vw,  1.6rem);
+      --text-2xl:  clamp(1.5rem,  1.1rem  + 1.5vw,  2.2rem);
+      --text-hero: clamp(1.4rem,  0.8rem  + 2.5vw,  2.6rem);
 
-        header p {
-            font-size: 1.2rem;
-        }
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+      --space-4: 1rem;    --space-5: 1.25rem; --space-6: 1.5rem;
+      --space-8: 2rem;    --space-10: 2.5rem; --space-12: 3rem;
+      --space-16: 4rem;
 
-        nav {
-            margin-top: 1rem;
-        }
+      --radius-sm: 2px; --radius-md: 3px; --radius-lg: 4px;
+      --transition: 160ms cubic-bezier(0.16, 1, 0.3, 1);
+      --content: 860px;
+    }
 
-        nav a {
-            margin: 0 15px;
-            text-decoration: none;
-            color: #00ff00;
-            font-weight: bold;
-        }
+    /* ============================================================  BASE */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: var(--space-16);
+      -webkit-font-smoothing: antialiased;
+    }
+    body {
+      background: var(--bg);
+      color: var(--green);
+      font-family: var(--font-mono);
+      font-size: var(--text-base);
+      line-height: 1.7;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+    ::selection { background: var(--green); color: #000; }
+    :focus-visible { outline: 1px solid var(--green); outline-offset: 3px; }
 
-        nav a:hover {
-            text-shadow: 0 0 10px #00ff00;
-        }
+    /* scanline overlay */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,255,0,0.015) 2px,
+        rgba(0,255,0,0.015) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
 
-        section {
-            padding: 2rem;
-            max-width: 800px;
-            margin: auto;
-        }
+    /* ============================================================  SKIP LINK */
+    .skip-link {
+      position: absolute; top: -99px; left: var(--space-4);
+      color: #000; background: var(--green);
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--text-sm);
+      z-index: 10000;
+    }
+    .skip-link:focus { top: var(--space-2); }
 
-        h2 {
-            border-bottom: 1px solid #00ff00;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
-        }
+    /* ============================================================  MATRIX RAIN CANVAS */
+    #matrix-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.04;
+    }
 
-        ul {
-            list-style: none;
-            padding: 0;
-        }
+    /* ============================================================  LAYOUT WRAPPER */
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+    }
 
-        li::before {
-            content: ">> ";
-            color: #00ff00;
-        }
+    /* ============================================================  HEADER */
+    header {
+      text-align: center;
+      padding: var(--space-10) var(--space-4) var(--space-8);
+      border-bottom: 1px solid var(--border-bright);
+      position: relative;
+      overflow: hidden;
+    }
 
-        footer {
-            text-align: center;
-            padding: 1rem;
-            border-top: 2px solid #00ff00;
-            margin-top: 2rem;
-            font-size: 0.9rem;
-        }
+    /* corner brackets */
+    header::before, header::after {
+      content: "";
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--green);
+      border-style: solid;
+      opacity: 0.6;
+    }
+    header::before { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+    header::after  { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
 
-        /* Typing animation effect */
-        .typing {
-            overflow: hidden;
-            border-right: .15em solid #00ff00;
-            white-space: nowrap;
-            animation: typing 3.5s steps(30, end), blink-caret .75s step-end infinite;
-            width: fit-content;
-            margin: auto;
-        }
+    .header-prompt {
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-3);
+    }
 
-        @keyframes typing {
-            from {
-                width: 0
-            }
+    .header-title {
+      font-family: var(--font-mono);
+      font-size: var(--text-hero);
+      font-weight: normal;
+      text-shadow: var(--green-glow-lg);
+      letter-spacing: -0.01em;
+      overflow: hidden;
+      white-space: nowrap;
+      width: 0;
+      margin: 0 auto var(--space-3);
+      border-right: 2px solid var(--green);
+      animation: type-in 2.8s steps(28, end) 0.3s forwards,
+                 blink 0.7s step-end infinite;
+      display: inline-block;
+    }
+    @keyframes type-in  { to { width: 100%; } }
+    @keyframes blink    { 50% { border-color: transparent; } }
 
-            to {
-                width: 100%
-            }
-        }
+    .header-role {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      margin-bottom: var(--space-6);
+    }
+    .header-role span {
+      color: var(--green);
+      opacity: 0.7;
+      margin: 0 var(--space-2);
+    }
 
-        @keyframes blink-caret {
+    /* ============================================================  NAV */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-top: var(--space-4);
+    }
+    nav a {
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: var(--space-2) var(--space-4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      transition: color var(--transition), border-color var(--transition), text-shadow var(--transition), background var(--transition);
+      position: relative;
+    }
+    nav a::before { content: "./"; opacity: 0.4; font-size: 0.85em; }
+    nav a:hover {
+      color: var(--green);
+      border-color: var(--green);
+      text-shadow: var(--green-glow);
+      background: var(--green-faint);
+    }
 
-            from,
-            to {
-                border-color: transparent
-            }
+    /* ============================================================  SECTIONS */
+    main { max-width: var(--content); margin: 0 auto; padding: 0 var(--space-4); }
 
-            50% {
-                border-color: #00ff00;
-            }
-        }
-    </style>
+    section {
+      padding: var(--space-12) 0 var(--space-8);
+      border-bottom: 1px solid var(--border);
+    }
+    section:last-child { border-bottom: none; }
+
+    /* section heading */
+    .section-heading {
+      font-family: var(--font-mono);
+      font-size: var(--text-xl);
+      font-weight: normal;
+      margin-bottom: var(--space-6);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      color: var(--green);
+      text-shadow: var(--green-glow);
+    }
+    .section-heading::before { content: ">_"; color: var(--text-faint); font-size: 0.8em; }
+    .section-heading::after  {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--green-dim), transparent);
+      opacity: 0.4;
+      margin-left: var(--space-3);
+    }
+
+    /* ============================================================  ABOUT */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+    .about-grid p {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .about-grid p strong { color: var(--green); font-weight: normal; text-shadow: 0 0 6px rgba(0,255,0,0.5); }
+
+    /* status badges */
+    .status-bar {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+      margin-top: var(--space-6);
+    }
+    .badge {
+      font-size: var(--text-xs);
+      color: #000;
+      background: var(--green);
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-sm);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .badge-outline {
+      background: transparent;
+      color: var(--green);
+      border: 1px solid var(--border-bright);
+    }
+
+    /* ============================================================  SKILLS */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-8);
+    }
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--space-5);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .skill-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 12px rgba(0,255,0,0.1);
+    }
+    .skill-card-title {
+      font-size: var(--text-sm);
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .skill-card-title::before { content: "//"; color: var(--text-faint); font-size: 0.9em; }
+    .skill-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+    .skill-list li {
+      font-size: var(--text-sm);
+      color: var(--text-muted);
+      padding-left: var(--space-4);
+      position: relative;
+    }
+    .skill-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      opacity: 0.7;
+    }
+
+    /* tools grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(160px, 100%), 1fr));
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+    .tool-chip {
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+      cursor: default;
+    }
+    .tool-chip:hover {
+      color: var(--green);
+      border-color: var(--green);
+      background: var(--green-faint);
+    }
+    .tool-chip .cat {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 2px;
+    }
+
+    /* ============================================================  PROJECTS */
+    .project-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-4);
+      padding: var(--space-5) 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .project-item:last-child { border-bottom: none; }
+    .project-dot {
+      width: 8px; height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 8px;
+      box-shadow: var(--green-glow);
+    }
+    .project-body { flex: 1; }
+    .project-body p {
+      font-size: var(--text-base);
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .project-body strong { color: var(--green); font-weight: normal; }
+
+    /* writeup card */
+    .writeup-card {
+      margin-top: var(--space-6);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .writeup-card:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 16px rgba(0,255,0,0.1);
+    }
+    .writeup-label {
+      font-size: var(--text-xs);
+      color: #000;
+      background: var(--green);
+      padding: var(--space-1) var(--space-3);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .writeup-body {
+      padding: var(--space-4) var(--space-5);
+    }
+    .writeup-body a {
+      font-size: var(--text-base);
+      color: var(--green);
+      text-decoration: none;
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      transition: text-shadow var(--transition);
+    }
+    .writeup-body a::before {
+      content: "↗";
+      flex-shrink: 0;
+      font-size: 1.1em;
+      opacity: 0.6;
+      margin-top: 1px;
+    }
+    .writeup-body a:hover { text-shadow: var(--green-glow); }
+    .writeup-meta {
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      margin-top: var(--space-2);
+    }
+
+    /* ============================================================  CONTACT */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+      gap: var(--space-3);
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: var(--text-sm);
+      transition: color var(--transition), border-color var(--transition), background var(--transition);
+    }
+    .contact-item:hover {
+      color: var(--green);
+      border-color: var(--green);
+      background: var(--green-faint);
+      text-shadow: 0 0 6px rgba(0,255,0,0.4);
+    }
+    .contact-icon {
+      font-size: var(--text-lg);
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+    .contact-label {
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* ============================================================  FOOTER */
+    footer {
+      text-align: center;
+      padding: var(--space-6) var(--space-4);
+      border-top: 1px solid var(--border);
+      font-size: var(--text-xs);
+      color: var(--text-faint);
+      letter-spacing: 0.08em;
+    }
+    footer span { color: var(--green); opacity: 0.5; }
+
+    /* ============================================================  SCROLL REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; }
+      .header-title { animation: none; width: 100%; border-right: none; }
+    }
+
+    /* ============================================================  MOBILE */
+    @media (max-width: 600px) {
+      nav a { padding: var(--space-2) var(--space-3); font-size: var(--text-xs); }
+      .section-heading { font-size: var(--text-lg); }
+      .skills-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <canvas id="matrix-canvas" aria-hidden="true"></canvas>
+
+  <div class="page-wrap">
+    <!-- ===== HEADER ===== -->
     <header>
-        <h1 class="typing">root@saurav:~# ./portfolio.sh</h1>
-        <p>Penetration Tester | Bug Bounty Hunter | Security Researcher</p>
-        <nav>
-            <a href="#about">About Me</a>
-            <a href="#skills">Skills</a>
-            <a href="#projects">Projects</a>
-            <a href="#contact">Contact</a>
-        </nav>
+      <p class="header-prompt">[ system boot — infosec portfolio v2.0 ]</p>
+      <h1 class="header-title">root@saurav:~# ./portfolio.sh</h1>
+      <p class="header-role">
+        Penetration Tester
+        <span>//</span>
+        Bug Bounty Hunter
+        <span>//</span>
+        Security Researcher
+      </p>
+      <nav aria-label="Primary navigation">
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#projects">Projects</a>
+        <a href="#contact">Contact</a>
+      </nav>
     </header>
 
-    <section id="about">
-        <h2>[ About Me ]</h2>
-        <p>
-            Hello, I’m <b>Saurav</b>, an active <b>Bug Bounty Hunter</b> and <b>Penetration Tester</b>.
+    <!-- ===== MAIN ===== -->
+    <main id="main">
+
+      <!-- ABOUT -->
+      <section id="about" aria-labelledby="about-heading">
+        <h2 class="section-heading reveal" id="about-heading">About Me</h2>
+        <div class="about-grid">
+          <p class="reveal">
+            Hello, I'm <strong>Saurav Kumar</strong> — an active <strong>Bug Bounty Hunter</strong> and <strong>Penetration Tester</strong> based in Delhi, India.
             I spend my days and nights hunting for vulnerabilities, contributing to a safer internet by reporting security flaws to organizations worldwide.
-        </p>
-        <p>
-            My core expertise lies in <b>IDOR (Insecure Direct Object Reference)</b> and <b>API Security</b> and <b>Ai Security </b>, where I’ve developed strong skills in identifying broken authorization flows and hidden API risks that attackers could exploit.
-        </p>
-        <p>
-            Beyond IDOR, I explore <b>web application vulnerabilities</b>, <b>authentication bypasses</b>, and <b>modern recon techniques</b>.
+          </p>
+          <p class="reveal">
+            My core expertise lies in <strong>IDOR (Insecure Direct Object Reference)</strong>, <strong>API Security</strong>, and <strong>AI Security</strong>, where I've developed strong skills in identifying broken authorization flows and hidden API risks that attackers could exploit.
+          </p>
+          <p class="reveal">
+            Beyond IDOR, I explore <strong>web application vulnerabilities</strong>, <strong>authentication bypasses</strong>, and <strong>modern recon techniques</strong>.
             I enjoy combining automation tools with manual testing to uncover bugs that slip past surface-level scans.
-        </p>
-        <p>
+          </p>
+        </div>
+        <div class="status-bar reveal">
+          <span class="badge">Active</span>
+          <span class="badge badge-outline">BugCrowd</span>
+          <span class="badge badge-outline">HackerOne</span>
+          <span class="badge badge-outline">AI Security</span>
+          <span class="badge badge-outline">Web AppSec</span>
+        </div>
+      </section>
 
-        </p>
-    </section>
+      <!-- SKILLS -->
+      <section id="skills" aria-labelledby="skills-heading">
+        <h2 class="section-heading reveal" id="skills-heading">Skills</h2>
+        <div class="skills-grid">
+          <div class="skill-card reveal">
+            <p class="skill-card-title">Specialization</p>
+            <ul class="skill-list">
+              <li>IDOR &amp; Broken Object Level Auth</li>
+              <li>API Security Testing</li>
+              <li>AI / LLM Security (Prompt Injection, Jailbreak)</li>
+              <li>Authentication &amp; Session Bypass</li>
+              <li>Business Logic Vulnerabilities</li>
+            </ul>
+          </div>
+          <div class="skill-card reveal">
+            <p class="skill-card-title">Web Pentesting</p>
+            <ul class="skill-list">
+              <li>XSS (Reflected, Stored, DOM)</li>
+              <li>SQL Injection &amp; NoSQL Injection</li>
+              <li>SSRF &amp; Path Traversal</li>
+              <li>CSRF &amp; Clickjacking</li>
+              <li>JWT &amp; OAuth Abuse</li>
+            </ul>
+          </div>
+          <div class="skill-card reveal">
+            <p class="skill-card-title">Programming</p>
+            <ul class="skill-list">
+              <li>Python — automation &amp; PoC scripting</li>
+              <li>Bash / Shell — recon pipelines</li>
+              <li>Go — basics, tool usage</li>
+            </ul>
+          </div>
+          <div class="skill-card reveal">
+            <p class="skill-card-title">Platforms</p>
+            <ul class="skill-list">
+              <li>TryHackMe (Jr Pentester ✓, AI Security ✓)</li>
+              <li>PortSwigger Web Security Academy</li>
+              <li>BugCrowd — active programs</li>
+              <li>HackerOne — active programs</li>
+            </ul>
+          </div>
+        </div>
 
+        <h3 class="section-heading reveal" style="font-size: var(--text-lg); margin-top: var(--space-4);">Tools</h3>
+        <div class="tools-grid reveal">
+          <div class="tool-chip"><span class="cat">Recon</span>Subfinder</div>
+          <div class="tool-chip"><span class="cat">Recon</span>Assetfinder</div>
+          <div class="tool-chip"><span class="cat">Recon</span>Amass</div>
+          <div class="tool-chip"><span class="cat">Crawl</span>Katana</div>
+          <div class="tool-chip"><span class="cat">Fuzz</span>FFUF</div>
+          <div class="tool-chip"><span class="cat">Scan</span>Nuclei</div>
+          <div class="tool-chip"><span class="cat">Scan</span>OWASP ZAP</div>
+          <div class="tool-chip"><span class="cat">XSS</span>DalFox</div>
+          <div class="tool-chip"><span class="cat">XSS</span>XSStrike</div>
+          <div class="tool-chip"><span class="cat">Manual</span>Burp Suite</div>
+          <div class="tool-chip"><span class="cat">SQLi</span>SQLmap</div>
+          <div class="tool-chip"><span class="cat">Fingerprint</span>Wappalyzer</div>
+        </div>
+      </section>
 
-    <section id="skills">
-        <h2>[ Skills ]</h2>
-        <ul>
-            <li>Specialized in <b>IDOR</b> and <b>API Security Testing</b></li>
-            <li>Web Pentesting → XSS, Authentication Bypass, Business Logic Issues</li>
-            <li>Programming → Python, Bash, Go (basics)</li>
-            <li>Platforms → TryHackMe, PortSwigger Labs</li>
-        </ul>
+      <!-- PROJECTS -->
+      <section id="projects" aria-labelledby="projects-heading">
+        <h2 class="section-heading reveal" id="projects-heading">Projects &amp; Writeups</h2>
 
-        <h3>Tools I Use:</h3>
-        <p>I conduct web application penetration testing with a mix of popular tools:</p>
-        <ul>
-            <li><b>Reconnaissance</b>: Assetfinder, Subfinder, Amass</li>
-            <li><b>Endpoint Discovery</b>: Katana, FFUF</li>
-            <li><b>Vulnerability Scanning</b>: Nuclei, OWASP ZAP</li>
-            <li><b>XSS Testing</b>: XSStrike, DalFox</li>
-            <li><b>Manual Testing</b>: Burp Suite, SQLmap</li>
-            <li><b>Technology Identification</b>: Wappalyzer, WhatWeb</li>
-        </ul>
-    </section>
+        <div class="project-item reveal">
+          <div class="project-dot"></div>
+          <div class="project-body">
+            <p>Completed <strong>TryHackMe Jr Penetration Tester</strong> path — covering network pentesting, web exploitation, and post-exploitation.</p>
+          </div>
+        </div>
+        <div class="project-item reveal">
+          <div class="project-dot"></div>
+          <div class="project-body">
+            <p>Completed <strong>TryHackMe AI Security</strong> path — covering LLM vulnerabilities, prompt injection, and adversarial AI testing.</p>
+          </div>
+        </div>
+        <div class="project-item reveal">
+          <div class="project-dot"></div>
+          <div class="project-body">
+            <p>Reported <strong>valid bugs</strong> in live programs on <strong>BugCrowd</strong> and <strong>HackerOne</strong> — including IDOR, API auth issues, and logic flaws.</p>
+          </div>
+        </div>
+        <div class="project-item reveal">
+          <div class="project-dot"></div>
+          <div class="project-body">
+            <p>Exploring <strong>automation pipelines</strong> for recon, JWT testing, and AI-assisted vulnerability triage using Nuclei, DalFox, and local LLMs.</p>
+          </div>
+        </div>
 
+        <!-- WRITEUP -->
+        <div class="writeup-card reveal">
+          <span class="writeup-label">Published Writeup</span>
+          <div class="writeup-body">
+            <a href="https://medium.com/@esaurav/how-i-found-an-arbitrary-read-write-vulnerability-in-grok-a-popular-xai-764015f79a2b"
+               target="_blank" rel="noopener noreferrer">
+              How I Found an Arbitrary Read/Write Vulnerability in Grok — a Popular xAI Tool
+            </a>
+            <p class="writeup-meta">medium.com/@esaurav &nbsp;·&nbsp; xAI / Grok &nbsp;·&nbsp; Arbitrary Read/Write</p>
+          </div>
+        </div>
+      </section>
 
-    <section id="projects">
-        <h2>[ Projects & Writeups ]</h2>
-        <p>🔹 Completed <b>TryHackMe Jr Penetration Tester </b><br>
-        <p>🔹 Completed <b>TryHackMe Ai Security </b><br>
-            🔹 Reported valid bugs in live bug bounty programs on Bugcrowd and Hackerone<br>
-            🔹 Exploring automation tools for recon & JWT testing</p> 
-        <h3>Writeups</h3>
-<p>
-  <a href="https://medium.com/@esaurav/how-i-found-an-arbitrary-read-write-vulnerability-in-grok-a-popular-xai-764015f79a2b" 
-     target="_blank" 
-     style="color:#00ff00; text-decoration: underline;">
-    How I Found an Arbitrary Read/Write Vulnerability in Grok — a Popular xAI Tool
-  </a>
-</p>
-             
-    </section>
+      <!-- CONTACT -->
+      <section id="contact" aria-labelledby="contact-heading">
+        <h2 class="section-heading reveal" id="contact-heading">Contact</h2>
+        <div class="contact-grid">
+          <a href="mailto:isaurav@yandex.com" class="contact-item reveal">
+            <span class="contact-icon" aria-hidden="true">✉</span>
+            <span>
+              <span class="contact-label">Email</span>
+              isaurav@yandex.com
+            </span>
+          </a>
+          <a href="https://twitter.com/sauravtxt" target="_blank" rel="noopener noreferrer" class="contact-item reveal">
+            <span class="contact-icon" aria-hidden="true">𝕏</span>
+            <span>
+              <span class="contact-label">Twitter / X</span>
+              @sauravtxt
+            </span>
+          </a>
+          <a href="https://github.com/sauravtxt" target="_blank" rel="noopener noreferrer" class="contact-item reveal">
+            <span class="contact-icon" aria-hidden="true">⌥</span>
+            <span>
+              <span class="contact-label">GitHub</span>
+              sauravtxt
+            </span>
+          </a>
+        </div>
+      </section>
 
-    <section id="contact">
-        <h2>[ Contact ]</h2>
-        <p>Email: <a href="mailto:youremail@example.com" style="color:#00ff00;">isaurav@yandex.com</a></p>
-        <p>Twitter/X: <a href="https://twitter.com/yourhandle" target="_blank" style="color:#00ff00;">@sauravtxt</a></p>
-        <p>GitHub: <a href="https://github.com/sauravtxt" target="_blank" style="color:#00ff00;">sauravtxt</a></p>
-    </section>
+    </main>
 
+    <!-- ===== FOOTER ===== -->
     <footer>
-        <p>© 2025 Saurav Kumar | Hacker Portfolio | Powered by GitHub </p>
+      <p>© 2025 Saurav Kumar <span>//</span> InfoSec Portfolio <span>//</span> Powered by curiosity &amp; caffeine</p>
     </footer>
-</body>
+  </div>
 
+  <script>
+    /* ===== MATRIX RAIN ===== */
+    (function () {
+      const canvas = document.getElementById("matrix-canvas");
+      const ctx = canvas.getContext("2d");
+      let cols, drops;
+
+      function init() {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const fontSize = 13;
+        cols = Math.floor(canvas.width / fontSize);
+        drops = Array.from({ length: cols }, () => Math.random() * -50);
+      }
+
+      function draw() {
+        ctx.fillStyle = "rgba(0,0,0,0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#00ff00";
+        ctx.font = "13px Share Tech Mono, monospace";
+        const chars = "01アイウエオカキクケコサシスセソタチツテトナニヌネノ";
+        for (let i = 0; i < drops.length; i++) {
+          const ch = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(ch, i * 13, drops[i] * 13);
+          if (drops[i] * 13 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+          drops[i] += 0.5;
+        }
+      }
+
+      init();
+      setInterval(draw, 60);
+      window.addEventListener("resize", init, { passive: true });
+    })();
+
+    /* ===== SCROLL REVEAL ===== */
+    (function () {
+      const els = document.querySelectorAll(".reveal");
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("visible");
+            observer.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach((el) => observer.observe(el));
+    })();
+  </script>
+</body>
 </html>
